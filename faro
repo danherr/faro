@@ -1,6 +1,11 @@
 #! /usr/bin/env ruby
 
+# version 1 of shuffle. This takes an array of arrays, computes a probability for
+# each sub-array (hereafter bin) based upon its size, and then shuffles them together.
+# The probability of drawing from a bin stays the same until it is empty.
+
 def shuffle_v1(array)
+  
   array = array.collect{|i| i.dup}
 
   probs = array.map{|arr| arr.length}
@@ -8,18 +13,17 @@ def shuffle_v1(array)
   total = probs.reduce(0) {|sum, el| sum + el}
 
   randy = Random.new
-  
   i = 0
   out = []
 
   while i < total
 
     rnum = randy.rand(total)
-
     ind = nil
     j = 0
 
     while not ind.nil?
+
       if probs[j] > rnum
         ind = j
       else
@@ -46,14 +50,23 @@ def shuffle_v1(array)
   
 end
 
-def shuffle_v2(array)
-  array = array.collect{|i| i.dup}
+# version 2 of shuffle re-normalizes the probabilities of the piles each time it draws
+# something. (Really, it uses a randomly permuted array of numbers in place of a pseudo
+# random number generator - which has the same effect.)
 
+def shuffle_v2(array)
+
+  array = array.collect{|i| i.dup}
+  
   probs = array.map{|arr| arr.length}
 
   total = 0
+  
   probs.collect!{|i| total += i}
 
+  # at this point, probs is effectively a cumulative probability function for the bins.
+  # I. E. the probability of bin i-or-less is (probs[i])/total
+  
   randy = Array(1..total).shuffle
 
   out = []
@@ -69,11 +82,12 @@ def shuffle_v2(array)
   
 end
 
-current = Dir.pwd
+# Right now, faro just uses shuffling v2. I may add in an option to let the user choose
+# at some point. Or just delete v1.
 
 array = ARGV.collect do |path|
 
-  Dir.glob(path + "**/*").select{|file| not File.directory?(file)}
+  Dir.glob(File.join(path,  "**/*")).select{|file| not File.directory?(file)}
 
 end
 
