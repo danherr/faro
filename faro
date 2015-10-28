@@ -87,7 +87,7 @@ end
 
 array = ARGV.collect do |path|
 
-  Dir.glob(File.join(path,  "**/*")).select{|file| not File.directory?(file)}
+  Dir.glob(File.join(path,  "**/*")).select{|file| not File.directory?(file)}.sort
 
 end
 
