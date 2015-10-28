@@ -1,4 +1,4 @@
-## Summary
+# Summary
 
 This is a simple command line utility that randomly interleaves the files in multiple directory sub-trees. It takes an arbitrary number of directories, finds their files, interleaves the files from its arguments randomly and puts the list on std out.
 
