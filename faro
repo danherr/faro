@@ -1,0 +1,81 @@
+#! /usr/bin/env ruby
+
+def shuffle_v1(array)
+  array = array.collect{|i| i.dup}
+
+  probs = array.map{|arr| arr.length}
+
+  total = probs.reduce(0) {|sum, el| sum + el}
+
+  randy = Random.new
+  
+  i = 0
+  out = []
+
+  while i < total
+
+    rnum = randy.rand(total)
+
+    ind = nil
+    j = 0
+
+    while not ind.nil?
+      if probs[j] > rnum
+        ind = j
+      else
+        rnum -= probs[j]
+      end
+
+      j += 1
+    end
+    
+    thing = array[ind].shift
+
+    if not thing.nil?
+      out << thing
+      i += 1
+    else
+      total -= probs[ind]
+      i -= probs[ind]
+      probs[ind] = 0      
+    end   
+    
+  end
+
+  return out
+  
+end
+
+def shuffle_v2(array)
+  array = array.collect{|i| i.dup}
+
+  probs = array.map{|arr| arr.length}
+
+  total = 0
+  probs.collect!{|i| total += i}
+
+  randy = Array(1..total).shuffle
+
+  out = []
+
+  for rnum in randy
+
+    ind = probs.index{|j| j >= rnum}
+    out << array[ind].shift
+
+  end
+
+  return out
+  
+end
+
+current = Dir.pwd
+
+array = ARGV.collect do |path|
+
+  Dir.glob(path + "**/*").select{|file| not File.directory?(file)}
+
+end
+
+STDOUT.puts(shuffle_v2(array))
+
